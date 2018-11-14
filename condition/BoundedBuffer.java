@@ -3,12 +3,16 @@ import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
 /**
- * Created by lenovo on 2018/11/12.
+ * 1. 定义一个ReentrantLock锁
+ * 2. 定义两个这个锁对应的condition
+ * 3. 定义一个数组，用来存储数据
+ * 4. putptr:put的字符串个数； takeptr:取出的字符串个数；count：数组中元素的个数
+ * 5.
  */
 public class BoundedBuffer {
     final Lock lock = new ReentrantLock();
-    final Condition notFull = lock.newCondition();
-    final Condition notEmpty = lock.newCondition();
+    final Condition notFull = lock.newCondition(); // 非满，可以往里写数据
+    final Condition notEmpty = lock.newCondition(); // 非空，
 
     final Object[] items = new Object[5];
     int putptr, takeptr, count;
@@ -16,6 +20,7 @@ public class BoundedBuffer {
     public void put(Object x) {
         lock.lock();  // 获取锁
         try {
+            // 数组已经满了，不可以往里写数据了。
             while(count == items.length)
                 notFull.await();
             // 将x添加到缓冲中
